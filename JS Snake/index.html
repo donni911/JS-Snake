@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Змійка</title>
+	<style>
+		body {
+      background: green;  
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    		}
+
+		canvas{
+			display: block;
+			margin: 0 auto;
+			border: 10px solid black;
+      		background: white;
+			cursor:pointer;
+		}
+	</style>
+</head>
+<body>
+<canvas id="canv" width="600" height="600"></canvas>
+
+<script type="text/javascript">
+
+	score = 0;
+
+	cells = 30;
+	cellSize = 20;
+
+	foodX = 20;
+	foodY = 20;
+
+	playerX = 15;
+	playerY = 15;
+
+	moveX = 0;
+	moveY = 0;
+
+	trail = [];
+
+	tail = 3;
+	 
+		window.onload = function(){
+
+			canv = document.querySelector("#canv");
+			ctx = canv.getContext("2d");
+
+			start();
+		}
+
+//start image
+		function start() {
+
+		playerX = 15;
+		playerY = 15;
+
+		moveX = 0;
+		moveY = 0;
+
+		score = 0;
+		
+
+			let background = new Image();
+				background.src = "snake.png";
+				background.onload = function(){
+					ctx.drawImage(background,60,200);
+					ctx.fillStyle = "black";
+					//text start
+					ctx.font = "50px monospace";
+					ctx.Align = "center";
+					ctx.fillText("Start",250,400);
+				}
+
+				canv.onclick = function(){
+					gameTimer = setInterval(game,80);
+					canv.onclick = null;
+				}
+
+		}		
+//Сама гра
+		function game(){
+
+			if(playerX < 0 || playerY < 0 ||playerY > cells || playerX > cells){//
+				endGame();
+}
+			playerX += moveX;//рух
+			playerY += moveY;
+
+			ctx.fillStyle = "#4d4e85";//Поле
+			ctx.fillRect(0,0, canv.width, canv.height);
+
+			ctx.fillStyle = "black";
+			ctx.font = "50px Arial";
+			ctx.fillText(score,cellSize * 1,cellSize * 2.5);
+
+			ctx.fillStyle = "#df6143";//Їжа
+			ctx.fillRect(foodX*cellSize,foodY*cellSize,cellSize,cellSize);
+
+			ctx.fillStyle = "#00ea85";//змійка
+			for(let i = 0; i < trail.length; i++){
+				ctx.fillRect(trail[i].x * cellSize, trail[i].y * cellSize,cellSize,cellSize);
+				//Перевірка
+				if(playerX == trail[i].x && playerY == trail[i].y){
+					tail = 3;
+					score = 0;
+					
+				}
+
+			}
+
+			trail.push({x :playerX ,y : playerY});
+
+			if (playerX == foodX && playerY == foodY){
+				tail++;
+				score++
+				foodX = Math.floor(Math.random() * cells);
+				foodY = Math.floor(Math.random() * cells);
+
+			}
+
+			while(trail.length>tail){
+				trail.shift();
+			}
+
+		}
+//Кінець гри
+		function endGame(){
+			clearInterval(gameTimer);
+			setTimeout(function(){
+			ctx.fillStyle = "white";
+			ctx.fillRect(0,0, canv.width, canv.height);
+
+			ctx.fillStyle = "black";
+			ctx.font = "70px monospace";
+			ctx.fillText("GAME OVER",130,300);
+		},100)
+
+			canv.onclick = start;
+
+
+			
+		}
+
+		
+
+//рух змійки
+		document.addEventListener('keydown', function (e) {
+    
+      if (e.which === 37 && moveX === 0) {
+       
+          moveX = -1;
+          moveY = 0;
+      }
+     
+      else if (e.which === 38 && moveY === 0) {
+        moveX = 0;
+        moveY = -1;
+      }
+      else if (e.which === 39 && moveX === 0) {
+          moveX = 1;
+          moveY = 0;
+      }
+      else if (e.which === 40 && moveY === 0) {
+          moveX = 0;
+          moveY = 1;
+      }
+    });
+
+</script>
+</body>
+</html>
